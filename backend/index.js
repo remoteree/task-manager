@@ -1,9 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose')
-const {User} = require("./models/models")
+const { Task } = require("./models/models")
 require('dotenv').config()
 
 const app = express();
+
+app.use(express.json());
 
 const connectionString = process.env.DB_CONN_STRING
 
@@ -19,18 +21,50 @@ db.once('open', () => {
   console.log('Connected to MongoDB successfully.');
 })
 
-const createDummyUser = async () => {
-  let user = new User({
-    name: 'Reshad',
-    age: 24
-  })
-  await user.save()
-}
-
-app.get('/dummy', async (req, res) => {
-  await createDummyUser()
-  res.send('Created User!');
+app.get('/tasks', async (req, res) => {
+  try {
+    const tasks = await Task.find({});
+    res.status(200).send(tasks);
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
+
+
+app.post('/tasks', async (req, res) => {
+  try {
+    const task = new Task(req.body);
+    await task.save();
+    res.status(201).send(task);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+app.put('/tasks/:id', async (req, res) => {
+  try {
+    const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    if (!task) {
+      return res.status(404).send();
+    }
+    res.status(200).send(task);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+app.delete('/tasks/:id', async (req, res) => {
+  try {
+    const task = await Task.findByIdAndDelete(req.params.id);
+    if (!task) {
+      return res.status(404).send();
+    }
+    res.status(200).send(task);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
 
 app.listen(8000, () => {
   console.log('Server is running on port 8000');

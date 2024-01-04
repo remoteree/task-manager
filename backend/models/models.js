@@ -1,9 +1,18 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
-  name: String,
-  age: Number
+const taskSchema = new Schema({
+  description: String,
+  duration_min: Number,
+  time_spent_min: Number,
+  category: {
+    type: String,
+    enum: ['learning', 'work', 'recreation', 'social', 'errand', 'fitness']
+  },
+  status: {
+    type: String,
+    enum: ['todo', 'complete', 'in progress']
+  }
 });
 
-module.exports.User = mongoose.model('User', userSchema);
+module.exports.Task = mongoose.model('Task', taskSchema);
