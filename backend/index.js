@@ -9,17 +9,19 @@ app.use(express.json());
 
 const connectionString = process.env.DB_CONN_STRING
 
-mongoose.connect(connectionString, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-
-const db = mongoose.connection;
-
-db.on('error', console.error.bind(console, "MongoDB connection error"))
-db.once('open', () => {
-  console.log('Connected to MongoDB successfully.');
-})
+if (process.env.NODE_ENV !== 'test') {
+  mongoose.connect(connectionString, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  
+  const db = mongoose.connection;
+  
+  db.on('error', console.error.bind(console, "MongoDB connection error"))
+  db.once('open', () => {
+    console.log('Connected to MongoDB successfully.');
+  })
+}  
 
 app.get('/tasks', async (req, res) => {
   try {
@@ -66,6 +68,9 @@ app.delete('/tasks/:id', async (req, res) => {
 });
 
 
-app.listen(8000, () => {
+const server = app.listen(8000, () => {
   console.log('Server is running on port 8000');
 });
+
+module.exports.app = app;
+module.exports.server = server;
