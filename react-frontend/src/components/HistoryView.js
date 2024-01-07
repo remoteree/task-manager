@@ -1,6 +1,5 @@
 import { Segment, Card, Button } from 'semantic-ui-react';
 
-// History View Component
 const HistoryView = ({ summaries }) => {
     return <Segment.Group>
         <Segment>
@@ -18,7 +17,6 @@ const HistoryView = ({ summaries }) => {
             </Card>))
         }
         </Segment>
-        
         </Segment.Group>
 }
 

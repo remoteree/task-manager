@@ -40,12 +40,10 @@ const mockSummaries = [
 const panes = [
   {
     menuItem: 'Today',
-    // render: () => <TabPane attached={false}>Today Content</TabPane>,
     render: () => <TabPane attached={false}><TodayView tasks={mockTasks}/></TabPane>,
   },
   {
     menuItem: 'History',
-    // render: () => <TabPane attached={false}>History Content</TabPane>,
     render: () => <TabPane attached={false}><HistoryView summaries={mockSummaries} /></TabPane>,
   },
 ]
