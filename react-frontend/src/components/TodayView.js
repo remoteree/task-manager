@@ -1,10 +1,33 @@
+import React, { useState } from 'react';
 import { Segment, List, Button } from 'semantic-ui-react';
+import AddTaskModal from './AddTaskModal';
 
 const TodayView = ({ tasks }) => {
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleModalToggle = () => setModalOpen(!modalOpen);
+
+  const handleAddTask = (newTask) => {
+    fetch(`${process.env.REACT_APP_BACKEND}/tasks`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newTask)
+    }).then(res => res.json())
+    .then(res => console.log("Response from server", res))
+    .catch(err => console.error(err))
+  };
+
   return (
     <Segment.Group>
       <Segment>
-        <Button primary onClick={() => {}}>Add New Task</Button>
+        <Button primary onClick={handleModalToggle}>Add New Task</Button>
+        <AddTaskModal
+          isOpen={modalOpen}
+          onClose={handleModalToggle}
+          onSubmit={handleAddTask}
+        />
       </Segment>
       <Segment>
         <List divided relaxed>
