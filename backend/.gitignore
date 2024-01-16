@@ -1,2 +1,4 @@
 .env
+output.txt
+err_output.txt
 node_modules

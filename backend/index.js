@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose')
 const cors = require('cors');
+const fs = require('fs');
+const https = require('https');
 const { Task } = require("./models/models")
 require('dotenv').config()
 
@@ -69,10 +71,21 @@ app.delete('/tasks/:id', async (req, res) => {
   }
 });
 
+let server = null
 
-const server = app.listen(8000, () => {
-  console.log('Server is running on port 8000');
-});
+if (process.env.NODE_ENV !== 'test') {
+  server = https.createServer({
+      key: fs.readFileSync(process.env.CERT_PRIVATE_KEY),
+      cert: fs.readFileSync(process.env.CERT_PUBLIC_KEY),
+      passphrase: process.env.CERT_PASSPHRASE,
+  }, app).listen(8000, () => {
+    console.log('Server is running on port 8000');
+  });
+} else {
+  server = app.listen(8000, () => {
+     console.log('Server is running on port 8000');
+    });
+}
 
 module.exports.app = app;
 module.exports.server = server;
