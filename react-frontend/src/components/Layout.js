@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { TabPane, Tab } from 'semantic-ui-react'
 import TodayView from './TodayView'
 import HistoryView from './HistoryView'
@@ -48,7 +48,43 @@ const panes = [
   },
 ]
 
-const Layout = () => 
-    <Tab menu={{ pointing: true }} panes={panes} />
+const Layout = () => {
+    const [tasks, setTasks] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const panes = useCallback(() => { return [
+        {
+          menuItem: 'Today',
+          render: () => <TabPane attached={false}><TodayView tasks={tasks}/></TabPane>,
+        },
+        {
+          menuItem: 'History',
+          render: () => <TabPane attached={false}><HistoryView summaries={mockSummaries} /></TabPane>,
+        },
+      ]}, [tasks])
+
+    useEffect(() => {
+        fetch(`${process.env.REACT_APP_BACKEND}/tasks`)
+          .then(response => {
+            if (response.ok) {
+              return response.json();
+            }
+            throw new Error('Network response was not ok.');
+          })
+          .then(data => {
+            setTasks(data);
+            setIsLoading(false);
+          })
+          .catch(error => {
+            setError(error);
+            setIsLoading(false);
+          });
+      }, []); // Empty dependency array ensures this runs once on mount
+    
+    return <Tab menu={{ pointing: true }} panes={panes()} />
+}
+
+    
 
 export default Layout
