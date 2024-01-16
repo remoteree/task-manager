@@ -13,6 +13,6 @@ const taskSchema = new Schema({
     type: String,
     enum: ['todo', 'complete', 'in progress']
   }
-});
+}, {timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }});
 
 module.exports.Task = mongoose.model('Task', taskSchema);

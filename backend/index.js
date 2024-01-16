@@ -34,6 +34,39 @@ app.get('/tasks', async (req, res) => {
   }
 });
 
+app.get('/tasks/summaries', async (req, res) => {
+  try {
+    const taskSummaries = await Task.aggregate([
+      {
+        $group: {
+          _id: { date: "$created_at", category: "$category" },
+          count: { $sum: 1 },
+          totalHours: { $sum: "$duration_min" } // Summing the hours for each group
+        }
+      },
+      {
+        $group: {
+          _id: "$_id.date",
+          categories: {
+            $push: {
+              category: "$_id.category",
+              count: "$count",
+              hours: "$totalHours" // Adding total hours to each category
+            }
+          },
+          totalHours: { $sum: "$totalHours" } // Summing hours for each date
+        }
+      },
+      {
+        $sort: { "_id": 1 } // Sorting by date in ascending order
+      }
+    ])
+    res.status(200).send(taskSummaries);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
 
 app.post('/tasks', async (req, res) => {
   try {
