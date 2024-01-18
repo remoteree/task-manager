@@ -51,7 +51,7 @@ const TodayView = ({ tasks }) => {
     })
     .then(res => {
       if (res.ok) {
-        // TODO: Refresh tasks
+        window.reload()
       } else {
         throw new Error('Failed to delete task');
       }
@@ -75,9 +75,11 @@ const TodayView = ({ tasks }) => {
             tasks.map(task => (
               <List.Item key={task.id}>
                 <List.Content floated='right'>
-                  <Button onClick={() => handleTaskCheck(task)}>Check</Button>
+                  <Icon name='check' onClick={() => handleTaskCheck(task)} style={{ cursor: 'pointer' }} />
                 </List.Content>
-                <Icon name='delete' onClick={() => handleDeleteTask(task.id)} style={{ cursor: 'pointer' }} />
+                <List.Content floated='right'>
+                  <Icon name='delete' onClick={() => handleDeleteTask(task.id)} style={{ cursor: 'pointer' }} />
+                </List.Content>
                 <List.Content>
                   <List.Header>{task.description}</List.Header>
                   <List.Description>
