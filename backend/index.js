@@ -38,6 +38,9 @@ app.get('/tasks/summaries', async (req, res) => {
   try {
     const taskSummaries = await Task.aggregate([
       {
+        // $match: {
+        //   status: "completed",
+        // },
         $group: {
           _id: { date: "$created_at", category: "$category" },
           count: { $sum: 1 },
@@ -54,7 +57,8 @@ app.get('/tasks/summaries', async (req, res) => {
               hours: "$totalHours" // Adding total hours to each category
             }
           },
-          totalHours: { $sum: "$totalHours" } // Summing hours for each date
+          totalHours: { $sum: "$totalHours" }, // Summing hours for each date
+          totalTasksCompleted: { $sum: "$count" }, // Summing hours for each date
         }
       },
       {
