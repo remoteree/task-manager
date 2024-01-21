@@ -3,25 +3,6 @@ import { TabPane, Tab } from 'semantic-ui-react'
 import TodayView from './TodayView'
 import HistoryView from './HistoryView'
 
-const mockTasks = [
-    {  
-        id: 1,
-        description: "Hi I am a task",
-        duration_min: 30,
-        time_spent_min: 25,
-        category: "learning",
-        status: "complete"
-    },
-    {  
-        id: 2,
-        description: "Hi I am another task",
-        duration_min: 40,
-        time_spent_min: 25,
-        category: "social",
-        status: "complete"
-    }
-]
-
 const mockSummaries = [
     {  
         id: 1,
@@ -40,7 +21,7 @@ const mockSummaries = [
 const panes = [
   {
     menuItem: 'Today',
-    render: () => <TabPane attached={false}><TodayView tasks={mockTasks}/></TabPane>,
+    render: () => <TabPane attached={false}><TodayView/></TabPane>,
   },
   {
     menuItem: 'History',
@@ -48,7 +29,10 @@ const panes = [
   },
 ]
 
-const Layout = () => 
-    <Tab menu={{ pointing: true }} panes={panes} />
+const Layout = () => {
+    return <Tab menu={{ pointing: true }} panes={panes} />
+}
+
+    
 
 export default Layout
