@@ -21,17 +21,16 @@ const TodayView = () => {
   };
 
   const handleCompleteTask = () => {
-    // Assuming 'id' is the unique identifier of the task
-    fetch(`${process.env.REACT_APP_BACKEND}/tasks/${selectedTask.id}/complete`, {
+    fetch(`${process.env.REACT_APP_BACKEND}/tasks/${selectedTask._id}/complete`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ completionTime })
+      body: JSON.stringify({ time_spent_min: completionTime })
     })
     .then(res => res.json())
     .then(res => {
-      console.log("Task completion response", res);
+      fetchTasks()
       setCompletionModalOpen(false);
     })
     .catch(err => console.error(err));
@@ -71,12 +70,13 @@ const TodayView = () => {
   };
 
   const handleDeleteTask = (taskId) => {
+    console.log(taskId)
     fetch(`${process.env.REACT_APP_BACKEND}/tasks/${taskId}`, {
       method: 'DELETE'
     })
     .then(res => {
       if (res.ok) {
-        window.reload()
+        fetchTasks()
       } else {
         throw new Error('Failed to delete task');
       }
@@ -112,7 +112,7 @@ const TodayView = () => {
                   <Icon name='check' onClick={() => handleTaskCheck(task)} style={{ cursor: 'pointer' }} />
                 </List.Content>
                 <List.Content floated='right'>
-                  <Icon name='delete' onClick={() => handleDeleteTask(task.id)} style={{ cursor: 'pointer' }} />
+                  <Icon name='delete' onClick={() => handleDeleteTask(task._id)} style={{ cursor: 'pointer' }} />
                 </List.Content>
                 <List.Content>
                   <List.Header>{task.description}</List.Header>
@@ -120,8 +120,15 @@ const TodayView = () => {
                   <Label style={{
                     'margin': '10px 0'
                   }}color={getLabelColor(task.category)}>
-                    Time planned: {task.duration_min} min
-                    <LabelDetail>{task.category}</LabelDetail>
+                    Time planned: {task.duration_min} min {task.status === 'complete' && `(spent ${task.time_spent_min} min)`}
+                    <LabelDetail style={{'opacity': '0.5'}}>{task.category}</LabelDetail>
+                    {
+                    task.status === 'complete' && 
+                      <Icon 
+                      style={{margin: '0 10px'}}
+                      name='check' color={'green'} 
+                      />
+                    }
                   </Label>
                   </List.Description>
                 </List.Content>

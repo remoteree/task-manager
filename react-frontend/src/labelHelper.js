@@ -12,6 +12,12 @@ export const getLabelColor = (category) => {
             return 'olive'
         case 'social':
             return 'pink'
+        case 'todo':
+            return 'grey'
+        case 'complete':
+            return 'green'  
+        case 'in progress':
+            return 'orange'  
         default:
             return 'grey'
     }

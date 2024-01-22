@@ -57,6 +57,18 @@ app.put('/tasks/:id', async (req, res) => {
   }
 });
 
+app.put('/tasks/:id/complete', async (req, res) => {
+  try {
+    const task = await Task.findByIdAndUpdate(req.params.id, {status: "complete", time_spent_min: req.body.time_spent_min}, { new: true, runValidators: true });
+    if (!task) {
+      return res.status(404).send();
+    }
+    res.status(200).send(task);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
 app.delete('/tasks/:id', async (req, res) => {
   try {
     const task = await Task.findByIdAndDelete(req.params.id);
