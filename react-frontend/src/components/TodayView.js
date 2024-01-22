@@ -70,7 +70,6 @@ const TodayView = () => {
   };
 
   const handleDeleteTask = (taskId) => {
-    console.log(taskId)
     fetch(`${process.env.REACT_APP_BACKEND}/tasks/${taskId}`, {
       method: 'DELETE'
     })
@@ -138,7 +137,6 @@ const TodayView = () => {
         </List>
         }
       </Segment>
-      {/* Task Completion Modal */}
       <Modal open={completionModalOpen} onClose={handleCompletionModalToggle}>
         <Modal.Header>Complete Task</Modal.Header>
         <Modal.Content>
