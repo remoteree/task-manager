@@ -34,6 +34,75 @@ app.get('/tasks', async (req, res) => {
   }
 });
 
+const findTasksCreatedToday = async () => {
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0); // Set the time to 00:00:00.000
+
+  const tasks = await Task.find({
+      created_at: {
+          $gte: startOfToday // greater than or equal to the start of today
+      }
+  });
+
+  return tasks;
+};
+
+app.get('/tasks/today', async (req, res) => {
+  try {
+    const tasks = await findTasksCreatedToday();
+    res.status(200).send(tasks);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+app.get('/tasks/summaries', async (req, res) => {
+  try {
+    const taskSummaries = await Task.aggregate([
+      {
+        $match: {
+          status: "complete"
+        }
+      },
+      {
+        $group: {
+          _id: {
+            date: {
+              $dateToString: { format: "%Y-%m-%d", date: "$created_at" }
+            },
+            category: "$category"
+          },
+          count: { $sum: 1 },
+          totalMinCommitted: { $sum: "$duration_min" },
+          totalMinTaken: { $sum: "$time_spent_min" },
+        }
+      },
+      {
+        $group: {
+          _id: "$_id.date",
+          categories: {
+            $push: {
+              category: "$_id.category",
+              count: "$count",
+              min_committed: "$totalMinCommitted",
+              min_taken: "$totalMinTaken",
+            }
+          },
+          totalMinCommitted: { $sum: "$totalMinCommitted" },
+          totalMinTaken: { $sum: "$totalMinTaken" },
+          totalTasksCompleted: { $sum: "$count" }
+        }
+      },
+      {
+        $sort: { "_id": 1 }
+      }
+    ]);
+    res.status(200).send(taskSummaries);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
 
 app.post('/tasks', async (req, res) => {
   try {
