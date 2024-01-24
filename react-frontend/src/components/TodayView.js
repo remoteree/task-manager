@@ -37,7 +37,7 @@ const TodayView = () => {
   };
 
   const fetchTasks = () => {
-    fetch(`${process.env.REACT_APP_BACKEND}/tasks`)
+    fetch(`${process.env.REACT_APP_BACKEND}/tasks/today`)
     .then(response => {
       if (response.ok) {
         return response.json();
@@ -108,7 +108,7 @@ const TodayView = () => {
             tasks.map(task => (
               <List.Item key={task.id}>
                 <List.Content floated='right'>
-                  <Icon name='check' onClick={() => handleTaskCheck(task)} style={{ cursor: 'pointer' }} />
+                  <Icon name='check' disabled = {task.status === 'complete'} onClick={() => handleTaskCheck(task)} style={{ cursor: 'pointer' }} />
                 </List.Content>
                 <List.Content floated='right'>
                   <Icon name='delete' onClick={() => handleDeleteTask(task._id)} style={{ cursor: 'pointer' }} />

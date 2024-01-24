@@ -34,17 +34,47 @@ app.get('/tasks', async (req, res) => {
   }
 });
 
+const findTasksCreatedToday = async () => {
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0); // Set the time to 00:00:00.000
+
+  const tasks = await Task.find({
+      created_at: {
+          $gte: startOfToday // greater than or equal to the start of today
+      }
+  });
+
+  return tasks;
+};
+
+app.get('/tasks/today', async (req, res) => {
+  try {
+    const tasks = await findTasksCreatedToday();
+    res.status(200).send(tasks);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
 app.get('/tasks/summaries', async (req, res) => {
   try {
     const taskSummaries = await Task.aggregate([
       {
-        // $match: {
-        //   status: "completed",
-        // },
+        $match: {
+          status: "complete"
+        }
+      },
+      {
         $group: {
-          _id: { date: "$created_at", category: "$category" },
+          _id: {
+            date: {
+              $dateToString: { format: "%Y-%m-%d", date: "$created_at" }
+            },
+            category: "$category"
+          },
           count: { $sum: 1 },
-          totalHours: { $sum: "$duration_min" } // Summing the hours for each group
+          totalMinCommitted: { $sum: "$duration_min" },
+          totalMinTaken: { $sum: "$time_spent_min" },
         }
       },
       {
@@ -54,17 +84,19 @@ app.get('/tasks/summaries', async (req, res) => {
             $push: {
               category: "$_id.category",
               count: "$count",
-              hours: "$totalHours" // Adding total hours to each category
+              min_committed: "$totalMinCommitted",
+              min_taken: "$totalMinTaken",
             }
           },
-          totalHours: { $sum: "$totalHours" }, // Summing hours for each date
-          totalTasksCompleted: { $sum: "$count" }, // Summing hours for each date
+          totalMinCommitted: { $sum: "$totalMinCommitted" },
+          totalMinTaken: { $sum: "$totalMinTaken" },
+          totalTasksCompleted: { $sum: "$count" }
         }
       },
       {
-        $sort: { "_id": 1 } // Sorting by date in ascending order
+        $sort: { "_id": 1 }
       }
-    ])
+    ]);
     res.status(200).send(taskSummaries);
   } catch (error) {
     res.status(500).send(error);
