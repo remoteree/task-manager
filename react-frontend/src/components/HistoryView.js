@@ -50,7 +50,7 @@ const HistoryView = () => {
                 <p>{ error }</p>
             </Message> :
             summaries.map(summary => (
-            <Card key={summary.date}>
+            <Card key={summary._id}>
             <Card.Content>
                 <Card.Header>{summary._id}</Card.Header>
                 <Card.Meta>Tasks completed: {summary.totalTasksCompleted}</Card.Meta>
